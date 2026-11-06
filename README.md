@@ -14,8 +14,25 @@
 
 本仓是这场实验的**方法论蒸馏**：把实战跑过的 12+ 个多代理工作流波次提炼成 5 份
 可以直接抄走的配方。这里没有业务代码——能跑的代码在
-[xiao-robot-kit/libraries](https://github.com/xiao-robot-kit/libraries)，
-本仓只装「怎么让一队 AI 替你把大活干完」。
+[xiao_robot_kit_idf](https://github.com/xiao-robot-kit/xiao_robot_kit_idf) 与
+[xiao_robot_kit_arduino](https://github.com/xiao-robot-kit/xiao_robot_kit_arduino)
+两个手工档库，本仓只装「怎么让一队 AI 替你把大活干完」。
+
+## 这是一个工作区（常用入口）
+
+本仓不是摆着看的文档——它是 **vibecoding 工作区**：开一个新项目时从这里起步，
+让 AI 替你写代码，你在两头自由切换底层库：
+
+| 想做什么 | 选哪个手工档库 | AI 怎么搭 |
+| --- | --- | --- |
+| 纯 ESP-IDF 工程（esp32s3） | [xiao_robot_kit_idf](https://github.com/xiao-robot-kit/xiao_robot_kit_idf) | 让 AI 按 `examples/idf/imu_quickstart` 的 CMake 模式挂库 |
+| Arduino IDE / Arduino CLI 工程 | [xiao_robot_kit_arduino](https://github.com/xiao-robot-kit/xiao_robot_kit_arduino) | 让 AI 按 `library.properties` + `examples/*.ino` 的模式写 sketch |
+| 无实物调试 | [xiao_robot_kit_qemu](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu) | 让 AI 在 QEMU 里烧录跑 IDF/Arduino 固件 |
+| 例程怎么用、硬件怎么接 | [xiao_robot_kit_docs](https://github.com/xiao-robot-kit/xiao_robot_kit_docs) | 让 AI 读文档再动手 |
+
+切换本身零成本：两个库是**同一颗 C 核心**（MIT），API 一致，只有构建形态不同
+（IDF 组件 vs Arduino 库）。让 AI 把配方抄走之前，先让它读一遍上面的工作区
+表格 + 你选中的手工档库 README，再开始派活。
 
 ## 数字战报
 
@@ -50,7 +67,7 @@
 > 验收记录，指标对得上才上表）；
 > ² = 本仓发布当日在私有源项目里真实复跑，exit 0（单测编译→运行、QEMU 链路
 > 后台起→限时收→必杀，均为实际命令行输出，非口头汇报）；
-> ³ = 与 [libraries](https://github.com/xiao-robot-kit/libraries) 开源组件库同一颗
+> ³ = 与 [xiao_robot_kit_idf](https://github.com/xiao-robot-kit/xiao_robot_kit_idf) / [xiao_robot_kit_arduino](https://github.com/xiao-robot-kit/xiao_robot_kit_arduino) 开源组件库同一颗
 > 电机核心的同一数字。
 > ≈15,000 的算法：13,007 + 1,999 = 15,006 帧逐帧断言（两段万帧级全链）；再算上
 > 3,880 条单测断言与上位机套件，全量口径约 1.9 万——「15k+」是保守写法。
@@ -92,7 +109,7 @@
 | ② 移植/实现波 | 文件域拆分并行子代理，波尾脚本实跑编译+单测当门 | 四类电机 1,022 断言、标定 2,372 断言等七套单测全绿 |
 | ③ 验收波 | 双域功能矩阵（✅实测 / ⚠️仅编译 / ❌缺失）+ 全部测试套总跑 | 61 项功能矩阵 + 七套测试全绿，缺口清单化转实验矩阵 |
 | ④ 实验矩阵 | 单波单实验，QEMU esp32s3 真仿真全链逐帧断言 | 9 个实验接力完成，万帧级链路零坏帧 |
-| ⑤ 开源化 | 组件库蒸馏脱敏 + 方法论配方提炼 | libraries 组件库（1,311 断言）+ 本仓五配方 |
+| ⑤ 开源化 | 组件库蒸馏脱敏 + 方法论配方提炼 | xiao_robot_kit_idf/arduino 组件库（1,311 断言）+ 本仓五配方 |
 
 （每一格的打法，都在 [recipes/](recipes/) 里有对应配方。）
 
@@ -105,9 +122,10 @@
 2. **整条流水线组合**：审查波产出雷清单 → 注入实现波任务卡 → 确定性验证门收口 →
    心跳自动驾驶让整条链过夜自走；
 3. **要能跑的机器人代码**：去
-   [xiao-robot-kit/libraries](https://github.com/xiao-robot-kit/libraries)——
-   同一队工作流产出的开源 C 组件库（IMU / 姿态 / 电机 / 参数持久化，
-   1,311 断言），ESP-IDF、Arduino、裸 CMake 三种吃法。
+   [xiao_robot_kit_idf](https://github.com/xiao-robot-kit/xiao_robot_kit_idf)（ESP-IDF 组件形态）
+   或 [xiao_robot_kit_arduino](https://github.com/xiao-robot-kit/xiao_robot_kit_arduino)
+   （Arduino 库形态）——同一颗 C 核心（IMU / 姿态 / 电机 / 参数持久化，
+   1,311 断言），API 一致，自由切换。
 
 > 诚实声明：本仓无 CI、无可执行物、无测试——配方是方法论文档，数字战报里的每个
 > 「✅ 复跑」都发生在私有源项目的真实命令行里（发布当日），口径见上文脚注。
