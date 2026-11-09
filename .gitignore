@@ -1,0 +1,14 @@
+# 克隆下来的兄弟仓（bootstrap.py 产物，不是本仓内容）
+repos/
+
+# AI vibe coding 的项目产物（用户与 AI 自行管理）
+projects/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 运行痕迹
+*.log
+.runtime/

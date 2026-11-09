@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "org": "xiao-robot-kit",
+  "clone_root": "repos",
+  "branch": "main",
+  "repos": [
+    {
+      "name": "xiao_robot_kit_idf",
+      "layer": "core + interface + testing",
+      "required": true,
+      "why": "八组件 C 核心库本体 + 28 个可独立构建的 ESP-IDF 工程 + 5052 断言单测",
+      "entry": "examples/README.md"
+    },
+    {
+      "name": "xiao_robot_kit_arduino",
+      "layer": "core (Arduino 形态) + interface",
+      "required": true,
+      "why": "同一份 C 核心的 Arduino 库形态（include 前缀重映射），Arduino IDE / arduino-cli 直接装",
+      "entry": "README.md"
+    },
+    {
+      "name": "xiao_robot_kit_docs",
+      "layer": "docs",
+      "required": true,
+      "why": "硬件事实源 + 全部例程索引 + 教程 + 踩坑，人和 AI 的阅读入口",
+      "entry": "README.md"
+    },
+    {
+      "name": "xiao_robot_kit_host",
+      "layer": "presentation",
+      "required": true,
+      "why": "本地可视化上位机：波形/姿态/电机/参数，sim 与真机两档，帧解码按契约",
+      "entry": "README.md"
+    },
+    {
+      "name": "xiao_robot_kit_qemu",
+      "layer": "testing (virtual hardware)",
+      "required": false,
+      "why": "无实物板时在 QEMU 里烧录运行 ESP-IDF 固件（需另装 QEMU + ESP-IDF 工具链）",
+      "entry": "README.md"
+    },
+    {
+      "name": ".github",
+      "layer": "coordination (org profile)",
+      "required": false,
+      "why": "组织级 profile/README，非开发仓",
+      "entry": "profile/README.md"
+    }
+  ]
+}
