@@ -30,23 +30,20 @@
 
 | 仓 | 职责 |
 | --- | --- |
-| **本仓** + `.github` | 工作区：自举工具、多代理配方、组织 profile |
+| **本仓** + `.github` | 工作区：自举工具、多代理配方、文档、组织 profile |
 | `repos/xiao_robot_kit_idf` | ESP-IDF 固件库 + 28 例程（平台胶水在 `examples/_shared/`） |
 | `repos/xiao_robot_kit_arduino` | 同一颗 C 核心的 Arduino 库形态（包装在 `src/arduino/`） |
-| `repos/xiao_robot_kit_host` | 可视化上位机 |
-| `repos/xiao_robot_kit_qemu` | QEMU 虚拟板 |
-| `repos/xiao_robot_kit_docs` | 人与 AI 的阅读入口（硬件/例程/教程） |
 
 跨仓只共享三样（各只在一处定义）：串口帧格式
 （idf 仓 `frame.h`）、命名预设表（各仓 `*_cfg_presets.c`）、引脚表
-（docs 仓）。动到这三样时，同 commit 同步引用方。
+（本仓 `docs/hardware/`）。动到这三样时，同 commit 同步引用方。
 
 ## 3. 派活前必做（AI 例行）
 
 1. `python scripts/bootstrap.py`——体检 + 仓状态；缺必需项就按输出里的
-   安装提示告知用户（缺 ESP-IDF / QEMU 等不能自动装，须用户本人装）。
-2. 读任务相关仓的 README + **docs 仓阅读地图**（`repos/xiao_robot_kit_docs/README.md`）
-   ——「板子上有什么、例程能玩什么」以 docs 仓为事实源，不凭记忆编。
+   安装提示告知用户（缺 ESP-IDF 等不能自动装，须用户本人装）。
+2. 读任务相关仓的 README + **文档阅读地图**（`docs/README.md`）
+   ——「板子上有什么、例程能玩什么」以 `docs/` 为事实源，不凭记忆编。
 3. 写代码的任务：先确认目标仓已克隆；没有就 `--clone`。
 4. 数字（组件数/断言数/例程数）一律**现场数**（`ctest`、`ls`、bootstrap 输出），
    不从本仓战报表抄——战报表只记录历史口径。

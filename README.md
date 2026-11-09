@@ -28,11 +28,11 @@ python scripts/bootstrap.py --all
 `bootstrap.py`（纯标准库，无第三方依赖）做两件事：
 
 1. **依赖体检**——逐项探测 git / python / cmake / ninja / **ESP-IDF** /
-   arduino-cli / esptool / **QEMU** / node，版本不够会给出按平台（Windows
+   arduino-cli / esptool / node，版本不够会给出按平台（Windows
    winget / macOS brew / Linux apt）的安装命令；缺必需项时明确告知，
    不让你到编译失败才发现。
 2. **兄弟仓自举**——按 [`repos.json`](repos.json)（组织仓唯一机器清单）
-   把 6 个仓克隆进 `./repos/`（浅克隆）；`--update` 快进已有克隆
+   把 2 个核心库仓克隆进 `./repos/`（浅克隆）；`--update` 快进已有克隆
    （本地有未提交改动会跳过并说明，不覆盖你的工作）；`--json` 给
    机器可读报告，`--strict` 把「必需项缺失」变成退出码 1，可当 CI 门禁。
 
@@ -44,7 +44,7 @@ $ python scripts/bootstrap.py --json     # AI 消费机器报告
 ```
 
 AI 用户直接对代理说「按 AGENTS.md 干活」即可——代理会自己跑 bootstrap、
-读 docs 仓地图、再开始派活（见 [`AGENTS.md`](AGENTS.md)）。
+读 `docs/` 阅读地图、再开始派活（见 [`AGENTS.md`](AGENTS.md)）。
 
 **零起步一段话**（原样复制给你的 AI 编码代理，即可令其克隆部署整个工作区）：
 
@@ -58,31 +58,29 @@ xiao-robot-kit）。按以下步骤执行，每步把实际命令输出给我看
 2. 先读 AGENTS.md 和 README.md，弄清工作区纪律和仓结构，再动手。
 3. 跑依赖体检：python scripts/bootstrap.py --json
    把 JSON 报告原样贴给我；缺哪个工具，按报告里的安装指引告诉我怎么装。
-   （ESP-IDF / QEMU 无法自动安装：ESP-IDF 用官方安装器；QEMU 可选，
-   无板时才需要，装法见 qemu 仓 scripts/setup-qemu.ps1。）
+   （ESP-IDF 无法自动安装，用官方安装器。）
 4. 拉齐其余仓：python scripts/bootstrap.py --clone
    （github.com 偶发 TLS 断连属已知抖动：先重试；连试两次仍断，
    检查本机代理 env | grep -i proxy 是否失效。）
-5. 完成后自检并汇报：./repos/ 下应出现五个仓目录（idf/arduino/docs/qemu/host），
+5. 完成后自检并汇报：./repos/ 下应出现两个仓目录（idf/arduino），
    每仓 git log -1 --oneline 一行；体检结论里 required 项是否全绿；
    明确列出你没做/做不了的事（例如 ESP-IDF 待我手动安装）。
    规矩：没有命令输出就不算完成，禁止说「已验证」除非你真跑过。
 ```
 
-## 组织里的 6 个仓库
+## 组织里的 3 个核心仓库
 
 | 仓库 | 干什么 |
 | --- | --- |
-| **vibe（本仓）** + [GitHub 组织](https://github.com/xiao-robot-kit) | 工作区：自举工具 + 多代理配方 |
+| **vibe（本仓）** + [GitHub 组织](https://github.com/xiao-robot-kit) | 工作区：自举工具 + 多代理配方 + 文档 |
 | [xiao_robot_kit_idf](https://github.com/xiao-robot-kit/xiao_robot_kit_idf) | ESP-IDF 固件库 + 28 个例程 |
 | [xiao_robot_kit_arduino](https://github.com/xiao-robot-kit/xiao_robot_kit_arduino) | 同一颗核心的 Arduino 库形态，API 一致 |
-| [xiao_robot_kit_host](https://github.com/xiao-robot-kit/xiao_robot_kit_host) | 可视化上位机：波形/姿态/电机/参数 |
-| [xiao_robot_kit_qemu](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu) | QEMU 虚拟板（没硬件也能跑例程） |
-| [xiao_robot_kit_docs](https://github.com/xiao-robot-kit/xiao_robot_kit_docs) | 硬件介绍、例程索引、教程、踩坑 |
+
+文档（硬件介绍、例程索引、教程、踩坑）不再独立成仓，直接维护在本仓的
+[`docs/`](docs/README.md)。
 
 各仓之间只共享三样东西（都只在一处定义）：串口帧格式
-（idf 仓 `frame.h`）、命名预设表、引脚表（docs 仓）。其余互不干扰——
-换上位机不影响固件，换固件形态不影响上位机。
+（idf 仓 `frame.h`）、命名预设表、引脚表（本仓 `docs/hardware/`）。其余互不干扰。
 
 ## 这套软硬件能玩什么（速览）
 
@@ -95,12 +93,11 @@ I2C 扩展口（J11/J12）· Grove 串口（J10）· IMU 恒温加热 · flash �
 5 级 IMU 链路（原始→标定→欧拉→四元数→轨迹）+ 8 个电机控制实验
 （开环→编码器→PID 网格→S 曲线→嵌套定时器）+ 1 个断电持久化 + 1 个入门模板。
 
-**软件三形态**：ESP-IDF 组件库 · Arduino 库（同一颗 C 核心，API 一致，切换
-零成本）· QEMU 虚拟板（不买板也能跑固件看数据）。
+**软件两形态**：ESP-IDF 组件库 · Arduino 库（同一颗 C 核心，API 一致，切换
+零成本）。
 
-逐器件的引脚、验收锚点、每个工程加了什么能力——**全在
-[xiao_robot_kit_docs](https://github.com/xiao-robot-kit/xiao_robot_kit_docs)**
-（人和 AI 读完就知道有什么、能用什么、怎么跑）。
+逐器件的引脚、验收锚点、每个工程加了什么能力——**全在本仓
+[`docs/`](docs/README.md)**（人和 AI 读完就知道有什么、能用什么、怎么跑）。
 
 ## 本仓目录
 
@@ -108,6 +105,7 @@ I2C 扩展口（J11/J12）· Grove 串口（J10）· IMU 恒温加热 · flash �
 xiao_robot_kit_vibe/
 ├── AGENTS.md           ★ AI 运行规范：红线 / 仓库分工 / 派活前必做 / 收口守则
 ├── repos.json          ★ 组织仓唯一机器清单（bootstrap 的输入）
+├── docs/               ★ 文档：硬件介绍 / 例程索引 / 教程（原 docs 仓迁入）
 ├── scripts/
 │   └── bootstrap.py    ★ 依赖体检 + 兄弟仓克隆/更新（纯标准库）
 ├── recipes/            ★ 5 份配方（多代理工作流方法论）
@@ -130,7 +128,7 @@ xiao_robot_kit_vibe/
 | 工作流波次 | **12+** | 10 份具名波次脚本真迹 + 12 份在档运行日志 ¹ |
 | 并行作战域 | **6** | 驱动/平台 · 算法库 · 固件组装 · 串口协议 · 上位机后端 · 上位机页面 ¹ |
 | 断言与逐帧检查 | **≈15,000+ 全绿** | 两段万帧级全链逐帧断言就占 15,006 ² |
-| QEMU 真仿真全链 | **esp32s3 固件 → 串口 → socket → 上位机** | 双实验联调 exit 0；发布当日复跑 12,999 帧 0 坏帧 ² |
+| 真仿真全链 | **esp32s3 固件 → 串口 → socket → 上位机** | 双实验联调 exit 0；发布当日复跑 12,999 帧 0 坏帧 ² |
 | 四类电机驱动库 | **1,238 断言** | PWM 开环 / 舵机 / 编码器闭环 / 直流 H 桥 ³ |
 
 细账（每个数字都标了口径，防战报注水）：
@@ -151,14 +149,14 @@ xiao_robot_kit_vibe/
 | **库单测合计** | **11 套 / 5,052 断言** | ✅ `ctest` 11/11 通过（实测 2.45 s）² |
 | 上位机 socket 桥 | 37 断言 | ✅ 复跑 0 fail ² |
 | 协议注入回归 | 100,000 帧 + 1% 比特错误注入，零静默污染 | ✅ 复跑 0 fail ² |
-| QEMU 电机全链（DC 专项） | 13,007 帧，零错向帧 | 波次记录 ¹，发布当日复跑 12,999 帧 PASS ² |
-| QEMU 四元数全链 | 1,999 帧，零丢帧，\|q\|≡1 | 波次记录 ¹ |
+| 电机全链（DC 专项） | 13,007 帧，零错向帧 | 波次记录 ¹，发布当日复跑 12,999 帧 PASS ² |
+| 四元数全链 | 1,999 帧，零丢帧，\|q\|≡1 | 波次记录 ¹ |
 | 轨迹重建 | 320 帧，静止漂移 0.18 mm | ✅ 复跑 0 fail ² |
 
 > 口径说明：
 > ¹ = 项目波次记录（私有项目的内部工作台账与波次脚本不随本仓发布，数字抄录自
 > 验收记录，指标对得上才上表）；
-> ² = 本仓发布当日在私有源项目里真实复跑，exit 0（单测编译→运行、QEMU 链路
+> ² = 本仓发布当日在私有源项目里真实复跑，exit 0（单测编译→运行、仿真链路
 > 后台起→限时收→必杀，均为实际命令行输出，非口头汇报）；
 > ³ = 与 [xiao_robot_kit_idf](https://github.com/xiao-robot-kit/xiao_robot_kit_idf) / [xiao_robot_kit_arduino](https://github.com/xiao-robot-kit/xiao_robot_kit_arduino) 开源组件库同一颗
 > 电机核心的同一数字（motor 1,022 + pid 78 + pwm 119 + scurve 19 = 1,238）。
@@ -191,7 +189,7 @@ xiao_robot_kit_vibe/
                                             ▼                  ▼
                                      ┌────────────┐     ┌────────────┐
                                      │ ④ 实验矩阵  │ ─▶ │  ⑤ 开源化   │
-                                     │ QEMU 真仿真 │     │ 组件蒸馏 +  │
+                                     │   真仿真    │     │ 组件蒸馏 +  │
                                      │ 万帧级联调  │     │ 配方提炼(本仓)│
                                      └────────────┘     └────────────┘
 ```
@@ -201,7 +199,7 @@ xiao_robot_kit_vibe/
 | ① 审查波 | 六域并行只读审查 + 每条发现独立复核 | 59 条发现全部复核成立，violation=0，雷清单注入下一波 |
 | ② 移植/实现波 | 文件域拆分并行子代理，波尾脚本实跑编译+单测当门 | 四类电机 1,022 断言、标定 3,402 断言等单测全绿 |
 | ③ 验收波 | 双域功能矩阵（✅实测 / ⚠️仅编译 / ❌缺失）+ 全部测试套总跑 | 61 项功能矩阵 + 测试套全绿，缺口清单化转实验矩阵 |
-| ④ 实验矩阵 | 单波单实验，QEMU esp32s3 真仿真全链逐帧断言 | 9 个实验接力完成，万帧级链路零坏帧 |
+| ④ 实验矩阵 | 单波单实验，esp32s3 真仿真全链逐帧断言 | 9 个实验接力完成，万帧级链路零坏帧 |
 | ⑤ 开源化 | 组件库蒸馏脱敏 + 方法论配方提炼 | idf/arduino 组件库（11 套 / 5,052 断言）+ 本仓五配方 |
 
 （每一格的打法，都在 [recipes/](recipes/) 里有对应配方。）
@@ -217,13 +215,12 @@ xiao_robot_kit_vibe/
 | ninja ≥ 1.10 | 可选 | IDF 默认生成器 | winget / brew / apt |
 | arduino-cli ≥ 1.0 | 可选 | Arduino 线路 | winget / brew / install.sh |
 | esptool ≥ 4 | 可选 | 手动擦写 flash | `pip install esptool` |
-| **QEMU（Espressif 版）** | 可选 | 无实物板跑固件 | [xiao_robot_kit_qemu](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu) 的 `setup-qemu.ps1` 一键装 |
-| node ≥ 18 | 可选 | 上位机页面测试 | winget / brew / apt |
+| node ≥ 18 | 可选 | 本地页面 JS 测试 | winget / brew / apt |
 
 ## 使用方式
 
 1. **vibe coding**（本仓的主场景）：clone 本仓 → `bootstrap.py --all` →
-   对你的 AI 代理说「按 AGENTS.md 干活」→ 代理自己读 docs 仓地图、克隆缺的仓、
+   对你的 AI 代理说「按 AGENTS.md 干活」→ 代理自己读 `docs/` 地图、克隆缺的仓、
    按 [recipes/](recipes/) 里的配方派子代理波次；你验收拍板。产物落
    `projects/`。
 2. **单配方套用**：每份配方自包含（模式名 / 适用场景 / 结构骨架 / 实战数据），

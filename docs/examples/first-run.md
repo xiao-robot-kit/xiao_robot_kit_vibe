@@ -8,7 +8,7 @@
 
 | 你的工具链 | 走这条 | 产物 |
 | --- | --- | --- |
-| ESP-IDF CLI | **P-00（第一步）** → [imu_quickstart](../tutorials/idf.md) | 启动自检 → 终端 CSV 流 |
+| ESP-IDF CLI | **P-00（第一步）** → [P-01 IMU 采样](../tutorials/idf.md) | 启动自检 → IMU 数据流 |
 | Arduino IDE | [imu_raw](../tutorials/arduino.md) | Serial Plotter 六轴波形 |
 
 如果你刚拿到板子、还不确定工具链是否装对，**先跑 P-00**：
@@ -22,7 +22,7 @@ idf.py build flash monitor
 看到 `OK boot P-00_hello_bringup` + 版本号 + 复位原因 = 工具链、串口、板子
 三件事都对。它不接任何外设，所以排除了接线变量。
 
-然后再跑 IMU：两个示例（imu_quickstart / imu_raw）做的是同一件事：
+然后再跑 IMU（P-01 / Arduino 的 imu_raw）做的是同一件事：
 **读 LSM6DS3TR-C 六轴 IMU → 物理量（g / dps）→ 输出**。
 
 ## 跑通判定（一定要看到这些才叫跑通）
@@ -48,12 +48,9 @@ idf.py build flash monitor
 | `ERR i2c no ack` | I2C 没应答 | 同上；确认引脚是 5/6 |
 | 波形全是 0 | 配置没生效或采样失败 | 看 `fatal()` 打印；重新上电 |
 
-> 跑通之后想继续验证数据质量与控制环，见 [深度实验索引](experiments-index.md)。
-
 ## 下一步
 
 - **想逐个玩板上的外设**：看 [外设例程索引](periph-index.md)（P-00~P-12，按
   「我想干什么」分组：动起来 / 灯光 / 传感器 / 电源 / 闭环 / 存参数）
 - 想看姿态（roll/pitch/yaw）：去 [attitude_print](arduino-attitude-print.md)
 - 想动电机：去 [motor_sweep](arduino-motor-sweep.md)（Arduino）或 P-05~P-07（IDF）
-- 想无实物仿真：去 [QEMU](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu)

@@ -11,8 +11,7 @@
 | --- | --- |
 | 手写 C 代码（IDF / Arduino 各形态） | 手工档库（idf / arduino） |
 | **让 AI 替你写**：新实验、新页面、新协议 | ⭐ vibe 工作区 |
-| 无实物调试已写好的固件 | qemu 仓 |
-| 查示例怎么用 | 本 docs 仓 |
+| 查示例怎么用 | 本 `docs/` |
 
 vibe 仓是「**AI 多代理工作流的方法论**」：一队子代理（审查员/实现工程师/
 测试工程师/前端…）按你可拍板的节奏推进。它本身不含业务代码——
@@ -20,7 +19,7 @@ vibe 仓是「**AI 多代理工作流的方法论**」：一队子代理（审�
 
 ## 0.5 工作区自举：只 clone vibe 一个仓（新能力）
 
-选 vibe coding 的用户不需要手动 clone 六个仓：
+选 vibe coding 的用户不需要手动 clone 各核心仓：
 
 ```bash
 git clone https://github.com/xiao-robot-kit/xiao_robot_kit_vibe.git
@@ -29,12 +28,12 @@ python scripts/bootstrap.py --all
 ```
 
 `bootstrap.py`（纯 Python 标准库）会：① 逐项体检你电脑的依赖（git/python/
-cmake/ESP-IDF/arduino-cli/QEMU…，缺什么就给按平台的安装命令）；② 按
+cmake/ESP-IDF/arduino-cli…，缺什么就给按平台的安装命令）；② 按
 `repos.json` 把组织里其余仓克隆进 `./repos/` 并可随时 `--update` 快进。
 
 对 AI 代理只需说一句「**按 AGENTS.md 干活**」——vibe 仓的
 [AGENTS.md](https://github.com/xiao-robot-kit/xiao_robot_kit_vibe/blob/main/AGENTS.md)
-里写死了红线、仓库分工、派活前必做（先 bootstrap 体检、先读本 docs 仓
+里写死了红线、仓库分工、派活前必做（先 bootstrap 体检、先读本 `docs/`
 阅读地图）与收口守则。新项目产物落 `projects/`（不入库）。
 
 ## 1. 五份配方（从这开始读）
@@ -83,10 +82,10 @@ cmake/ESP-IDF/arduino-cli/QEMU…，缺什么就给按平台的安装命令）�
 库的 README 与 [库结构说明](library-layout.md)**——头文件前缀（`imu/` `att/`
 `mtr/` vs Arduino 的 `attitude/` `motor/` `calibration/`）是它最容易写错的地方。
 
-## 4. 和文档仓的分工
+## 4. 和文档的分工
 
-- **vibe 仓** = 派活的方法论 + 五配方（「怎么让 AI 干」）
-- **docs 仓（本仓）** = 硬件/库/示例的用法（「这块板子和代码怎么用」）
+- **vibe 工作区（本仓）** = 派活的方法论 + 五配方（「怎么让 AI 干」）+ 文档载体
+- **`docs/`** = 硬件/库/示例的用法（「这块板子和代码怎么用」）
 
 给 AI 派涉及硬件的活时，把 docs 的
 [硬件介绍](../hardware/board.md) 链接一并给它，避免它乱猜引脚。

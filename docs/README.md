@@ -13,24 +13,18 @@ XIAO Robot Kit 的**使用方法文档**：这块板子是什么、三个库怎�
 | --- | --- | --- |
 | 第一次拿到套件 | [硬件介绍](hardware/board.md) → [跑通第一个示例](examples/first-run.md) | 15 min |
 | 想逐个玩板上的外设 | [**外设例程索引**](examples/periph-index.md)（13 个例程） | — |
-| 想让数据变准、环变稳 | [**深度实验索引**](examples/experiments-index.md)（14 个工程：标定 / 姿态 / 闭环 / 持久化） | — |
 | 想看懂库的目录与头文件前缀 | [**库结构说明**](tutorials/library-layout.md) | 10 min |
-| ESP-IDF 开发者 | [IDF 库教学](tutorials/idf.md) → [imu_quickstart 拆解](examples/idf-imu-quickstart.md) | 30 min |
+| ESP-IDF 开发者 | [IDF 库教学](tutorials/idf.md) | 30 min |
 | Arduino 用户 | [Arduino 库教学](tutorials/arduino.md) → [imu_raw 拆解](examples/arduino-imu-raw.md) | 30 min |
-| 没有实物板 | [QEMU 仿真](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu) → [串口协议](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu/blob/main/docs/protocol-spec.md) | 20 min |
 | 想用 AI 代写 | [Vibe 工作区教学](tutorials/vibe.md) → [大小库切换](https://github.com/xiao-robot-kit/xiao_robot_kit_vibe) | 10 min |
-| 想可视化调试 | [上位机指南](https://github.com/xiao-robot-kit/xiao_robot_kit_host) | 10 min |
 
-## 六仓总览
+## 三仓总览
 
 ```
 xiao-robot-kit（组织）
-├── xiao_robot_kit_idf     手工档 IDF 库——八组件 C 核心 + 13 个外设例程 + 14 个深度实验
-├── xiao_robot_kit_arduino 手工档 Arduino 库——同一颗 C 核心 + 三 sketch
-├── xiao_robot_kit_vibe    vibecoding 自举工作区——只 clone 它一个，脚本自动拉齐其余仓 + 依赖体检；五配方
-├── xiao_robot_kit_docs    ★ 本仓：硬件介绍 + 教程 + 示例用法
-├── xiao_robot_kit_qemu    QEMU 虚拟板——无实物烧录调试
-└── xiao_robot_kit_host    上位机——已支持示例的可视化交互调试
+├── xiao_robot_kit_idf      手工档 IDF 库——八组件 C 核心 + 13 个外设例程
+├── xiao_robot_kit_arduino  手工档 Arduino 库——同一颗 C 核心 + 三 sketch
+└── xiao_robot_kit_vibe     vibecoding 自举工作区（含 docs：硬件介绍 + 教程 + 示例用法）
 ```
 
 两个手工档库是**同一颗 C 核心**（MIT），API 一致，只有构建形态不同。切换成本为零。
@@ -51,9 +45,7 @@ docs/
 │   └── vibe.md             vibecoding 工作区教学（让 AI 读配方 → 派活 → 验收）
 └── examples/
     ├── periph-index.md     ★ 13 个外设例程索引（P-00~P-12，按「想干什么」分组）
-    ├── experiments-index.md ★ 14 个深度实验索引（IMU 链路 / 电机控制 / 参数持久化）
-    ├── first-run.md        第一次跑通：P-00 起步 / imu_quickstart
-    ├── idf-imu-quickstart.md   imu_quickstart 逐片拆解（IDF）
+    ├── first-run.md        第一次跑通：P-00 起步
     ├── arduino-imu-raw.md      imu_raw 逐片拆解（Arduino）
     ├── arduino-motor-sweep.md  motor_sweep 逐片拆解（Arduino 电机三形态）
     └── arduino-attitude-print.md  attitude_print 逐片拆解（姿态融合看什么）
@@ -86,8 +78,8 @@ docs/
   按键 = D11；电池 ADC = D16；Grove 串口 = D6/D7；I2C 扩展 = J11/J12。
   唯一可飞线备用 = TP20/TP21。完整表见 [硬件介绍](hardware/board.md)。
 - **串口帧协议** :IMU/姿态/电机遥测都走同一帧打包（SOF 0xA5 | LEN | TYPE |
-  SEQ | PAYLOAD | CRC8）。上位机与 QEMU 都认这套帧。完整规范见
-  [protocol-spec.md](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu/blob/main/docs/protocol-spec.md)。
+  SEQ | PAYLOAD | CRC8）。完整规范见 idf 仓
+  `src/proto/include/proto/frame.h`（布局单源）。
 - **零硬编码参数**：库的一切可调项都来自命名预设表（`imu.raw.104`、
   `motor.servo.sg90`…）。改行为 = 换预设，不是改代码里的魔法数字。
 - **头文件带组件前缀**：链接 `xiao_imu` 后写 `#include "imu/lsm6ds3.h"`（不是裸名

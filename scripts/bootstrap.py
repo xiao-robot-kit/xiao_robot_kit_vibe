@@ -5,7 +5,7 @@
 Two jobs, no third-party dependencies (stdlib only):
 
   1. dependency doctor  -- is git / python / cmake / ESP-IDF / arduino-cli /
-                           QEMU / esptool present, new enough, and where to
+                           esptool present, new enough, and where to
                            install it if not
   2. repo bootstrap     -- clone or fast-forward the sibling repos listed in
                            repos.json into ./repos/
@@ -97,12 +97,8 @@ TOOLS = [
     dict(key="esptool", name="esptool", probe=["esptool.py", "version"], minimum=(4, 0),
          need="手动擦写/读 flash（IDF 里已内置，独立装可选）", optional=True,
          hint={"any": "pip install esptool    （IDF 环境里已有，一般不用单独装）"}),
-    dict(key="qemu", name="QEMU (esp32s3)", probe=["qemu-system-xtensa", "--version"], minimum=(8, 0),
-         need="无实物板跑固件（xiao_robot_kit_qemu 线路）", optional=True,
-         hint={"any": "用 xiao_robot_kit_qemu 的一键脚本装 Espressif 版 QEMU：\n"
-                      "     powershell -ExecutionPolicy Bypass -File scripts/setup-qemu.ps1"}),
     dict(key="node", name="node", probe=["node", "--version"], minimum=(18, 0),
-         need="上位机页面 JS 测试（只跑固件不需要）", optional=True,
+         need="本地 JS 页面测试（只跑固件不需要）", optional=True,
          hint={"windows": "winget install --id OpenJS.NodeJS.LTS -e",
                "darwin": "brew install node",
                "linux": "sudo apt install nodejs"}),
@@ -289,7 +285,7 @@ def main():
         print("  下一步：python scripts/bootstrap.py --clone")
     elif not hard_missing:
         print("\n  下一步：进 repos/xiao_robot_kit_idf/examples 挑一个工程，"
-              "或读 repos/xiao_robot_kit_docs/README.md")
+              "或读 docs/README.md")
     print()
     return exit_code
 
