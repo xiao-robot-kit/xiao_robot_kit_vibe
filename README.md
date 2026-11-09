@@ -46,6 +46,29 @@ $ python scripts/bootstrap.py --json     # AI 消费机器报告
 AI 用户直接对代理说「按 AGENTS.md 干活」即可——代理会自己跑 bootstrap、
 读 docs 仓地图、再开始派活（见 [`AGENTS.md`](AGENTS.md)）。
 
+**零起步一段话**（原样复制给你的 AI 编码代理，即可令其克隆部署整个工作区）：
+
+```text
+请帮我部署 XIAO Robot Kit 开发环境（ESP32-S3 机器人套件，GitHub 组织
+xiao-robot-kit）。按以下步骤执行，每步把实际命令输出给我看，不许口头略过：
+
+1. 选一个不含中文和空格的目录，执行：
+   git clone https://github.com/xiao-robot-kit/xiao_robot_kit_vibe.git
+   然后进入 xiao_robot_kit_vibe/ 目录。
+2. 先读 AGENTS.md 和 README.md，弄清工作区纪律和仓结构，再动手。
+3. 跑依赖体检：python scripts/bootstrap.py --json
+   把 JSON 报告原样贴给我；缺哪个工具，按报告里的安装指引告诉我怎么装。
+   （ESP-IDF / QEMU 无法自动安装：ESP-IDF 用官方安装器；QEMU 可选，
+   无板时才需要，装法见 qemu 仓 scripts/setup-qemu.ps1。）
+4. 拉齐其余仓：python scripts/bootstrap.py --clone
+   （github.com 偶发 TLS 断连属已知抖动：先重试；连试两次仍断，
+   检查本机代理 env | grep -i proxy 是否失效。）
+5. 完成后自检并汇报：./repos/ 下应出现五个仓目录（idf/arduino/docs/qemu/host），
+   每仓 git log -1 --oneline 一行；体检结论里 required 项是否全绿；
+   明确列出你没做/做不了的事（例如 ESP-IDF 待我手动安装）。
+   规矩：没有命令输出就不算完成，禁止说「已验证」除非你真跑过。
+```
+
 ## 组织架构：七层分治，一仓一职
 
 整个组织按**七层分治**组织（coordination → presentation → interface →
