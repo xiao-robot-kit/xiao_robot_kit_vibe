@@ -26,21 +26,20 @@
 6. `projects/` 是 AI/用户的实验产物区（已 gitignore）——vibe coding 生成的
    新项目放那里，**别提交进本仓**。
 
-## 2. 七层分治与仓映射（架构事实源）
+## 2. 仓库分工（架构事实源）
 
-| 层 | 职责 | 承载仓（`repos/` 下） |
-| --- | --- | --- |
-| coordination | 调度/方法论/组织 profile | **本仓** + `.github`（org profile） |
-| presentation | 用户可见的交互 | `xiao_robot_kit_host`（可视化上位机） |
-| interface | 平台胶水（I2C/flash/PWM 后端、Arduino 包装） | `xiao_robot_kit_idf` 的 `examples/_shared/` + `xiao_robot_kit_arduino` 的 `src/arduino/` |
-| core | 与平台无关的 C 算法/驱动核心 | `xiao_robot_kit_idf` 的 `src/<组件>/`（Arduino 仓是同一颗核心的另一形态） |
-| shared | 零依赖的共享契约 | 帧协议 `src/proto/include/proto/frame.h`、各组件预设表（`*_cfg_presets.c`） |
-| testing | 单测 + 虚拟硬件 | 各组件 `tests/` + `xiao_robot_kit_qemu` |
-| docs | 人类与 AI 的阅读入口 | `xiao_robot_kit_docs` |
+| 仓 | 职责 |
+| --- | --- |
+| **本仓** + `.github` | 工作区：自举工具、多代理配方、组织 profile |
+| `repos/xiao_robot_kit_idf` | ESP-IDF 固件库 + 28 例程（平台胶水在 `examples/_shared/`） |
+| `repos/xiao_robot_kit_arduino` | 同一颗 C 核心的 Arduino 库形态（包装在 `src/arduino/`） |
+| `repos/xiao_robot_kit_host` | 可视化上位机 |
+| `repos/xiao_robot_kit_qemu` | QEMU 虚拟板 |
+| `repos/xiao_robot_kit_docs` | 人与 AI 的阅读入口（硬件/例程/教程） |
 
-**依赖单向向下**：core 不知道 presentation；跨仓只走**契约**（帧格式、预设名、
-引脚表——都定义在下游仓的单点文件里）。任务跨层时先问「这一层的变更签到了
-哪份契约」。
+跨仓只共享三样（各只在一处定义）：串口帧格式
+（idf 仓 `frame.h`）、命名预设表（各仓 `*_cfg_presets.c`）、引脚表
+（docs 仓）。动到这三样时，同 commit 同步引用方。
 
 ## 3. 派活前必做（AI 例行）
 

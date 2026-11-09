@@ -69,42 +69,20 @@ xiao-robot-kit）。按以下步骤执行，每步把实际命令输出给我看
    规矩：没有命令输出就不算完成，禁止说「已验证」除非你真跑过。
 ```
 
-## 组织架构：七层分治，一仓一职
+## 组织里的 6 个仓库
 
-整个组织按**七层分治**组织（coordination → presentation → interface →
-core → shared + testing + docs），依赖单向向下，跨仓只走契约：
+| 仓库 | 干什么 |
+| --- | --- |
+| **vibe（本仓）** + [GitHub 组织](https://github.com/xiao-robot-kit) | 工作区：自举工具 + 多代理配方 |
+| [xiao_robot_kit_idf](https://github.com/xiao-robot-kit/xiao_robot_kit_idf) | ESP-IDF 固件库 + 28 个例程 |
+| [xiao_robot_kit_arduino](https://github.com/xiao-robot-kit/xiao_robot_kit_arduino) | 同一颗核心的 Arduino 库形态，API 一致 |
+| [xiao_robot_kit_host](https://github.com/xiao-robot-kit/xiao_robot_kit_host) | 可视化上位机：波形/姿态/电机/参数 |
+| [xiao_robot_kit_qemu](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu) | QEMU 虚拟板（没硬件也能跑例程） |
+| [xiao_robot_kit_docs](https://github.com/xiao-robot-kit/xiao_robot_kit_docs) | 硬件介绍、例程索引、教程、踩坑 |
 
-```text
-                 ┌──────────────────────────────────────────┐
-  coordination   │ vibe（本仓：方法论+工作区） · .github     │  派活、配方、组织面
-                 └───────────────┬──────────────────────────┘
-                                 │ 读文档、发任务卡
-                 ┌───────────────▼──────────────────────────┐
-  docs           │ xiao_robot_kit_docs                       │  事实源：硬件/例程/教程
-                 └───────────────┬──────────────────────────┘
-                                 │
-   ┌─────────────────────────────┼─────────────────────────────┐
-   │                             │                             │
-presentation            interface + core + shared        testing
-   │                     xiao_robot_kit_idf                     │
-xiao_robot_kit_host     （八组件 C 核心 + 28 工程）    xiao_robot_kit_qemu
-（可视化上位机）          xiao_robot_kit_arduino           （QEMU 虚拟板）
-                         （同一颗核心的 Arduino 形态）
-```
-
-| 层 | 仓 | 职责 |
-| --- | --- | --- |
-| coordination | **vibe（本仓）** + `.github` | 工作流配方、自举工具、组织 profile |
-| presentation | [xiao_robot_kit_host](https://github.com/xiao-robot-kit/xiao_robot_kit_host) | 可视化上位机：波形/姿态/电机/参数，sim 与真机两档 |
-| interface | idf 仓 `examples/_shared/` + arduino 仓 `src/arduino/` | 平台胶水：I2C/flash/PWM 后端、Arduino 包装 |
-| core | [xiao_robot_kit_idf](https://github.com/xiao-robot-kit/xiao_robot_kit_idf) / [xiao_robot_kit_arduino](https://github.com/xiao-robot-kit/xiao_robot_kit_arduino) | 八组件平台无关 C 核心（同一颗，两种发布形态） |
-| shared | idf 仓 `src/proto/include/proto/frame.h` + 预设表 | 零依赖契约：帧格式、命名预设（`imu.raw.104`…） |
-| testing | 各组件 `tests/` + [xiao_robot_kit_qemu](https://github.com/xiao-robot-kit/xiao_robot_kit_qemu) | 5,052 断言 / 11 套单测；无实物板的 QEMU 运行 |
-| docs | [xiao_robot_kit_docs](https://github.com/xiao-robot-kit/xiao_robot_kit_docs) | 硬件介绍 + 例程索引 + 教程 + 踩坑 |
-
-**跨仓契约只有三样**：串口帧格式（`frame.h` 单点定义）、命名预设表、引脚表
-（docs 仓权威）。其余一律不跨界——所以换上位机不影响固件，换固件形态不影响
-上位机。
+各仓之间只共享三样东西（都只在一处定义）：串口帧格式
+（idf 仓 `frame.h`）、命名预设表、引脚表（docs 仓）。其余互不干扰——
+换上位机不影响固件，换固件形态不影响上位机。
 
 ## 这套软硬件能玩什么（速览）
 
@@ -128,7 +106,7 @@ I2C 扩展口（J11/J12）· Grove 串口（J10）· IMU 恒温加热 · flash �
 
 ```text
 xiao_robot_kit_vibe/
-├── AGENTS.md           ★ AI 运行规范：红线 / 七层映射 / 派活前必做 / 收口守则
+├── AGENTS.md           ★ AI 运行规范：红线 / 仓库分工 / 派活前必做 / 收口守则
 ├── repos.json          ★ 组织仓唯一机器清单（bootstrap 的输入）
 ├── scripts/
 │   └── bootstrap.py    ★ 依赖体检 + 兄弟仓克隆/更新（纯标准库）
